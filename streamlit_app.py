@@ -18,7 +18,7 @@ def get_db_conn():
 conn = get_db_conn()
 
 #database query for chart making data
-query = "SELECT Date/Time, Mean Max Temp (°C) FROM production.duckdb ORDER BY Date/Time ASC;"
+query = """SELECT "Date/Time", "Mean Max Temp (°C)" FROM production.duckdb ORDER BY "Date/Time" ASC;"""
 df = conn.execute(query).df()
 
 #Construct the chart
