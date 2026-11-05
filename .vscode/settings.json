@@ -1,0 +1,13 @@
+{
+    "python-envs.defaultEnvManager": "ms-python.python:system",
+
+    "duckdb.databases": [
+        {
+            "alias": "climate_data",
+            "type": "file",
+            "path": "./data/production.duckdb",
+            "readOnly": false,
+            "attached": true
+        }
+    ]
+}
