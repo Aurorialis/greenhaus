@@ -8,8 +8,6 @@ DB_PATH = "./data/climate_data.duckdb"
 CSV_PATH = "./RawData/edmonton_raw.csv"
 TABLE_NAME = "climate_records"
 
-#columns to extract from csv
-
 #Page info
 st.set_page_config(page_title = "greenHaus App", layout = "wide")
 
@@ -19,5 +17,29 @@ st.title("A Climate Visualizer")
 #database file path
 db_path = "./data/climate_data.duckdb"
 
-#connect to the database
-conn = duckdb.connect(database=db_path, read_only=False)
+def load_data_to_db():
+    #Connect to db, write access needed currently (change later?)
+    conn = duckdb.connect(database=db_path, read_only=False)
+
+    try:
+        #Query if everything goes right
+        query = f"""
+        CREATE OR REPLACE TABLE edmonton_climate AS
+        SELECT
+            "Date/Time" AS record_date,
+            "Mean Temp" AS mean_temp
+        FROM read_csv_auto('{CSV_PATH}');
+        """
+        #Execute query on csv
+        conn.execute(query)
+        st.success("Table created and populated")
+
+    #If query fails
+    except Exception as e:
+        st.error(f"Extraction Failed: {e}")
+
+    #close the connection
+    finally:
+        conn.close()
+
+load_data_to_db()
