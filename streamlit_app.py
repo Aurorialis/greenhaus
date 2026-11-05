@@ -12,7 +12,7 @@ st.title("A Climate Visualizer")
 #Cache data from duckdb
 @st.cache_resource
 def get_db_conn():
-    return duckdb.connect("production.duckdb", read_only = False)
+    return duckdb.connect("data/production.duckdb", read_only = False)
 
 #Conntect to the database
 conn = get_db_conn()
