@@ -42,6 +42,15 @@ ax.plot(
     label="Yearly Average"
 )
 
+if show_trend:
+    ax.plot(
+        df["date"],
+        df["temperature"].rolling(10,center=True).mean(),
+        color = (0,0,0),
+        linewidth=0.7,
+        label="Decadal Trend"
+    )
+
 ax.axhline(0, color="gray", linewidth=0.8)
 ax.set_xlim(df["date"].min(), df["date"].max())
 ax.set_xlabel("Date")
