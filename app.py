@@ -61,7 +61,7 @@ start_year = st.session_state.get("start_year")
 #If a valid year was not entered
 if start_year is None:
     st.info("Enter a year to start from, then click confirm")
-    st.stop
+    st.stop()
 
 #Create dataframe with filtered year data
 df = data[data["date"].dt.year.between(start_year, last_year)].reset_index(drop=True)
