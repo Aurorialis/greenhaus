@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import streamlit as st
 
-csv_path = Path(__file__).parent / "climate_data" / "edmonton.csv"
+csv_path = Path(__file__).parent / "climate_data" / "Edmonton.csv"
 
 #Page title and info
 st.set_page_config(page_title="Edmonton Historical Weather Data", layout="wide")
