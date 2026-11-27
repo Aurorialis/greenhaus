@@ -36,14 +36,11 @@ last_year = int(data["date"].dt.year.max())
 
 #Year Selection Box
 with st.form("year_form"):
-    year_select = st.number_input(
-        f"Start Year ({first_year} - {last_year})",
-        min_value=first_year,
-        max_value=last_year,
-        value=None,
-        step=1,
-        format="%d",
-        placeholder="Enter A Year"
+    year_select = st.selectbox(
+        "Start Year",
+        options=list(range(first_year, last_year+1)),
+        index=None,
+        placeholder="Select a year"
     )
     confirmed = st.form_submit_button("Confirm")
 
@@ -51,7 +48,7 @@ with st.form("year_form"):
 if confirmed:
     if year_select is None:
         st.session_state.pop("start_year", None)
-        st.error("Please Enter a Year Before Pressing Confirm")
+        st.error("Please Select a Year Before Pressing Confirm")
     else:
         st.session_state["start_year"] = int(year_select)
 
