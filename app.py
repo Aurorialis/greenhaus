@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import streamlit as st
 
-csv_path = Path(__file__).parent / "climate_data" / "edmonton_2026.csv"
+csv_path = Path(__file__).parent / "climate_data" / "edmonton.csv"
 
 #Page title and info
 st.set_page_config(page_title="Edmonton Historical Weather Data", layout="wide")
@@ -33,12 +33,12 @@ show_trend = st.checkbox("Trendline", True)
 
 
 #Chart creation
-fig, ax = plt.subplots(figsize=(4,5))
+fig, ax = plt.subplots(figsize=(8,5))
 ax.plot(
     df["date"],
     df["temperature"],
     color="tab:red",
-    linewidth=0.5,
+    linewidth=0.6,
     label="Yearly Average"
 )
 
@@ -47,17 +47,18 @@ if show_trend:
         df["date"],
         df["temperature"].rolling(10,center=True).mean(),
         color = (0,0,0),
-        linewidth=0.7,
+        linewidth=0.8,
         label="Decadal Trend"
     )
 
-ax.axhline(0, color="gray", linewidth=0.8)
+#Chart formatting
+ax.axhline(0, color="gray", linewidth=0.8, linestyle="--")
 ax.set_xlim(df["date"].min(), df["date"].max())
-ax.set_xlabel("Date")
+ax.set_xlabel("Year")
 ax.set_ylabel("Temperature")
-ax.set_title("1906 - 2026")
+ax.set_title(f"Average Yearly Temperature: {df["date"].min():%Y} - {df["date"].max():%Y}")  #Wildcard for variable dates
 ax.legend(loc="upper left")
-fig.tight_layout()
+fig.tight_layout(pad=3)
 
 st.pyplot(fig)
 plt.close(fig)
