@@ -58,15 +58,14 @@ start_year = st.session_state.get("start_year")
 #If a valid year was not entered
 if start_year is None:
     st.info("Enter a year to start from, then click confirm")
-    st.stop
+    st.stop()
 
 #Create dataframe with filtered year data
 df = data[data["date"].dt.year.between(start_year, last_year)].reset_index(drop=True)
 if df.empty:
     st.info(f"Data from {start_year} to {end_year} unavailable")
     st.stop()
-
-st.caption(f"Showing {df["date"].dt.year.min()} - {df["date"].dt.year.max()}")
+st.success("Data found!")
 
 #Trendline checkbox
 show_trend1 = st.checkbox("Temperature Trend", True)
