@@ -36,14 +36,11 @@ last_year = int(data["date"].dt.year.max())
 
 #Year Selection Box
 with st.form("year_form"):
-    year_select = st.number_input(
-        f"Start Year ({first_year} - {last_year})",
-        min_value=first_year,
-        max_value=last_year,
-        value=None,
-        step=1,
-        format="%d",
-        placeholder="Enter A Year"
+    year_select = st.selectbox(
+        "Start Year",
+        options=list(range(first_year, last_year+1)),
+        index=None,
+        placeholder="Select a year"
     )
     confirmed = st.form_submit_button("Confirm")
 
@@ -51,7 +48,7 @@ with st.form("year_form"):
 if confirmed:
     if year_select is None:
         st.session_state.pop("start_year", None)
-        st.error("Please Enter a Year Before Pressing Confirm")
+        st.error("Please Select a Year Before Pressing Confirm")
     else:
         st.session_state["start_year"] = int(year_select)
 
@@ -61,15 +58,14 @@ start_year = st.session_state.get("start_year")
 #If a valid year was not entered
 if start_year is None:
     st.info("Enter a year to start from, then click confirm")
-    st.stop
+    st.stop()
 
 #Create dataframe with filtered year data
 df = data[data["date"].dt.year.between(start_year, last_year)].reset_index(drop=True)
 if df.empty:
-    st.info(f"Data from {start_year} to {last_year} unavailable")
+    st.info(f"Data from {start_year} to {end_year} unavailable")
     st.stop()
-
-st.caption(f"Showing {df["date"].dt.year.min()} - {df["date"].dt.year.max()}")
+st.success("Data found!")
 
 #Trendline checkbox
 show_trend1 = st.checkbox("Temperature Trend", True)
