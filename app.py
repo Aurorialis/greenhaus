@@ -63,7 +63,7 @@ if start_year is None:
 #Create dataframe with filtered year data
 df = data[data["date"].dt.year.between(start_year, last_year)].reset_index(drop=True)
 if df.empty:
-    st.info(f"Data from {start_year} to {last_year} unavailable")
+    st.info(f"Data from {start_year} to {end_year} unavailable")
     st.stop()
 
 st.caption(f"Showing {df["date"].dt.year.min()} - {df["date"].dt.year.max()}")
