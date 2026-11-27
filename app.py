@@ -6,6 +6,7 @@ import pandas as pd
 import streamlit as st
 
 csv_path = Path(__file__).parent / "climate_data" / "Edmonton.csv"
+end_year = 2026     #Hardcoded for now, should adapt to current year later
 
 #Page title and info
 st.set_page_config(page_title="Edmonton Historical Weather Data", layout="wide")
@@ -26,11 +27,50 @@ if not csv_path.exists():
     st.stop()                                   #Stopping point
 
 #Load csv file
-df = load_data(csv_path)
+data = load_data(csv_path)
+first_year = int(data["date"].dt.year.min())
+last_year = int(data["date"].dt.year.max())
+
+
+#Year Selection Box
+with st.form("year_form"):
+    year_select = st.number_input(
+        f"Start Year ({first_year} - {last_year})",
+        min_value=first_year,
+        max_value=last_year,
+        value=None,
+        step=1,
+        format="%d",
+        placeholder="Enter A Year"
+    )
+    confirmed = st.form_submit_button("Confirm")
+
+#Checking input
+if confirmed:
+    if year_select is None:
+        st.session_state.pop("start_year", None)
+        st.error("Please Enter a Year Before Pressing Confirm")
+    else:
+        st.session_state["start_year"] = int(year_select)
+
+#Generate session
+start_year = st.session_state.get("start_year")
+
+#If a valid year was not entered
+if start_year is None:
+    st.info("Enter a year to start from, then click confirm")
+    st.stop
+
+#Create dataframe with filtered year data
+df = data[data["date"].dt.year.between(start_year, last_year)].reset_index(drop=True)
+if df.empty:
+    st.info(f"Data from {start_year} to {last_year} unavailable")
+    st.stop()
+
+st.caption(f"Showing {df["date"].dt.year.min()} - {df["date"].dt.year.max()}")
 
 #Trendline checkbox
 show_trend1 = st.checkbox("Decade Trend", True)
-
 
 #Chart creation
 fig1, ax1 = plt.subplots(figsize=(8,5))
