@@ -15,8 +15,8 @@ st.title("Monthly Temperature Fluxuation")
 @st.cache_data
 def load_data(path: Path) -> pd.DataFrame:
     df = pd.read_csv(path, encoding="latin-1")                  #Encoding swap for degree symbol
-    df = df.iloc[:, 1:4]                                        #Township uneeded for now
-    df.columns = ["date", "temperature", "precip"]              #Column names
+    df = df.iloc[:, 1:5]                                        #Township uneeded for now
+    df.columns = ["date", "temperature", "precip", "solar"]     #Column names
     df["date"] = pd.to_datetime(df["date"], format="%Y")        #Match date format to csv dates
     return df.sort_values("date").reset_index(drop=True)        #Return sorted by date, oldest to newest (does this need to happen? All csvs from gov are sorted)
 
@@ -98,3 +98,41 @@ fig2.tight_layout(pad=3)
 
 st.pyplot(fig2)
 plt.close(fig2)
+
+#Solar radiation trend line
+show_trend3 = st.checkbox("Solar Radiation Trendline", True)
+
+#Solar radiation chart
+fig3, ax3 = plt.subplots(figsize=(8,6))
+ax3.plot(
+    df["date"],
+    df["solar"],
+    color="tab:orange",
+    linewidth=0.8,
+    label="Yearly Average"
+)
+
+#Decade Trend Line, Solar Radiation
+if show_trend3:
+    ax3.plot(
+        df["date"],
+        df["solar"].rolling(10,center=True).mean(),
+        color = (0,0,0),
+        linewidth=1,
+        label="10 Year Trend"
+    )
+
+#Solar radiation chart formatting
+y_min_solar = df["solar"].min()
+y_max_solar = df["solar"].max()
+buffer = (y_max_solar - y_min_solar) * 0.05
+ax3.set_xlim(df["date"].min(), df["date"].max())
+ax3.set_ylim(y_min_solar - buffer, y_max_solar + buffer)
+ax3.set_xlabel("Year")
+ax3.set_ylabel("Solar Radiation (MJ/m2)")
+ax3.set_title(f"Average Annual Incoming Solar Radiation: {df["date"].min():%Y} - {df["date"].max():%Y}")  #Wildcard for variable dates
+ax3.legend(loc="upper right")
+fig3.tight_layout(pad=3)
+
+st.pyplot(fig3)
+plt.close(fig3)
