@@ -15,10 +15,12 @@ st.title("Monthly Temperature Fluxuation")
 #Get data from csv
 @st.cache_data
 def load_data(path: Path) -> pd.DataFrame:
-    df = pd.read_csv(path, encoding="latin-1")                  #Encoding swap for degree symbol
-    df = df.iloc[:, 1:5]                                        #Township uneeded for now
-    df.columns = ["date", "temperature", "precip", "solar"]     #Column names
-    df["date"] = pd.to_datetime(df["date"], format="%Y")        #Match date format to csv dates
+    df = pd.read_csv(path, encoding="latin-1")                          #Encoding swap for degree symbol
+    df = df.iloc[:, 1:5]                                                #Township uneeded for now
+    df.columns = ["date", "temperature", "precip", "solar"]             #Column names
+    df["date"] = pd.to_datetime(df["date"], format="%Y")                #Match date format to csv dates
+    for col in ["temperature", "precip", "solar"]:                      #Generate trendline before filtering to reduce start cutoff
+        df[f"{col}_trend"] = df[col].rolling(10,center=True).mean()
     return df.sort_values("date").reset_index(drop=True)        #Return sorted by date, oldest to newest (does this need to happen? All csvs from gov are sorted)
 
 #Confirm csv file exists in path
@@ -70,7 +72,7 @@ if df.empty:
 st.caption(f"Showing {df["date"].dt.year.min()} - {df["date"].dt.year.max()}")
 
 #Trendline checkbox
-show_trend1 = st.checkbox("Decade Trend", True)
+show_trend1 = st.checkbox("Temperature Trend", True)
 
 #Chart creation
 fig1, ax1 = plt.subplots(figsize=(8,5))
@@ -86,7 +88,7 @@ ax1.plot(
 if show_trend1:
     ax1.plot(
         df["date"],
-        df["temperature"].rolling(10,center=True).mean(),
+        df["temperature_trend"],
         color = (0,0,0),
         linewidth=1,
         label="10 Year Trend"
@@ -105,7 +107,7 @@ st.pyplot(fig1)
 plt.close(fig1)
 
 #Precip trend line
-show_trend2 = st.checkbox("Trendline", True)
+show_trend2 = st.checkbox("Precipitation Trend", True)
 
 #Precipitation chart
 fig2, ax2 = plt.subplots(figsize=(8,5))
@@ -121,7 +123,7 @@ ax2.plot(
 if show_trend2:
     ax2.plot(
         df["date"],
-        df["precip"].rolling(10,center=True).mean(),
+        df["precip_trend"],
         color = (0,0,0),
         linewidth=1,
         label="10 Year Trend"
@@ -140,7 +142,7 @@ st.pyplot(fig2)
 plt.close(fig2)
 
 #Solar radiation trend line
-show_trend3 = st.checkbox("Solar Radiation Trendline", True)
+show_trend3 = st.checkbox("Incoming Solar Radiation Trend", True)
 
 #Solar radiation chart
 fig3, ax3 = plt.subplots(figsize=(8,6))
@@ -156,7 +158,7 @@ ax3.plot(
 if show_trend3:
     ax3.plot(
         df["date"],
-        df["solar"].rolling(10,center=True).mean(),
+        df["solar_trend"],
         color = (0,0,0),
         linewidth=1,
         label="10 Year Trend"
