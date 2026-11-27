@@ -103,11 +103,11 @@ plt.close(fig2)
 show_trend3 = st.checkbox("Solar Radiation Trendline", True)
 
 #Solar radiation chart
-fig3, ax3 = plt.subplots(figsize=(8,5))
+fig3, ax3 = plt.subplots(figsize=(8,6))
 ax3.plot(
     df["date"],
     df["solar"],
-    color="tab:blue",
+    color="tab:orange",
     linewidth=0.8,
     label="Yearly Average"
 )
@@ -123,9 +123,11 @@ if show_trend3:
     )
 
 #Solar radiation chart formatting
-ax3.axhline(0, color="gray", linewidth=0.8, linestyle="--")
+y_min_solar = df["solar"].min()
+y_max_solar = df["solar"].max()
+buffer = (y_max_solar - y_min_solar) * 0.05
 ax3.set_xlim(df["date"].min(), df["date"].max())
-ax3.set_ylim(df["solar"].min(), df["solar"].max())
+ax3.set_ylim(y_min_solar - buffer, y_max_solar + buffer)
 ax3.set_xlabel("Year")
 ax3.set_ylabel("Solar Radiation (MJ/m2)")
 ax3.set_title(f"Average Annual Incoming Solar Radiation: {df["date"].min():%Y} - {df["date"].max():%Y}")  #Wildcard for variable dates
